@@ -2,8 +2,7 @@
 %clear,clc
 
 ys=20*[1 1]; xs=[1 10]; h=0.01; Ds=RR_tf(ys,xs)
-Ds.K
-i=3
+
 function [Dz]=AJM_C2D_matched(Ds,h,omega_bar,causalbool)
     % function [Dz]=AJM_C2D_matched(Ds,h,omega_bar,causalbool)
     % Convert Ds(s) to Dz(z) using matched method.  If omega_bar is specified, Gain is applied
