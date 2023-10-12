@@ -2,7 +2,8 @@
 %clear,clc
 
 ys=20*[1 1]; xs=[1 10]; h=0.01; Ds=RR_tf(ys,xs)
-
+Ds.K
+i=3
 function [Dz]=AJM_C2D_matched(Ds,h,omega_bar,causalbool)
     % function [Dz]=AJM_C2D_matched(Ds,h,omega_bar,causalbool)
     % Convert Ds(s) to Dz(z) using matched method.  If omega_bar is specified, Gain is applied
@@ -12,21 +13,21 @@ function [Dz]=AJM_C2D_matched(Ds,h,omega_bar,causalbool)
     % TEST: ys=20*[1 1]; xs=[1 10]; h=0.01; Ds=RR_tf(ys,xs); omegac=sqrt(10); [Dz]=AJM_C2D_matched(Ds,h,omegac)
     %       disp('Corresponding Matlab solution:')
     %       opt = c2dOptions('Method','tustin','PrewarpFrequency',omegac); c2d(tf(ys,xs),h,opt)
-        if nargin==2, f=1; else, f=2*(1-cos(omega_bar*h))/(omega_bar*h*sin(omega_bar*h)); end
+        if nargin==2
+            omegbar=0; 
+        elseif nargin==3
+            omegbar=omega_bar
+            causalboo=true
+        else 
+            omegbar=omega_bar
+            causalboo=causalbool
+        end
         c=2/(f*h); m=Ds.num.n; n=Ds.den.n; b=RR_poly(0); a=b;
         fac1=RR_poly([1 1]); fac2=RR_poly([1 -1]);
         for j=0:m; b=b+Ds.num.poly(m+1-j)*c^j*fac1^(n-j)*fac2^j; end
-        for j=0:n; a=a+Ds.den.poly(n+1-j)*c^j*fac1^(n-j)*fac2^j; end, Dz=RR_tf(b,a); Dz.h=h;
+        for j=0:n; a=a+Ds.den.poly(n+1-j)*c^j*fac1^(n-j)*fac2^j; end 
+        Dz=RR_tf(b,a); Dz.h=h;Dz.K=
 end % function AJM_C2D_matched
-function varlist(X,Y,varargin)
-   fprintf('Total number of inputs = %d\n',nargin);
-
-   nVarargs = length(varargin);
-   fprintf('Inputs in varargin(%d):\n',nVarargs)
-   for k = 1:nVarargs
-      fprintf('   %d\n', varargin{k})
-   end
-end
 % function [Gz]=RR_C2D_zoh(Gs,h)
 %     % function [Gz]=RR_C2D_zoh(Gs,h)
 %     % Compute (exactly) the Gz(z) corresponding to a D/A-Gs(s)-A/D cascade with timestep h.
